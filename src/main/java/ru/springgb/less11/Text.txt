@@ -95,3 +95,19 @@ docker run --rm --detach --name my-prometheus --publish 9090:9090 --volume prome
 В докере exec
 cd /etc/prometheus/
 cat prometheus.yml
+
+
+
+Запуск grafana
+
+docker run -d --name=grafana -p 3000:3000 grafana/grafana
+
+
+Logger
+
+ищем параметр который нужно изменить
+в постмене открываем его
+например localhost:8080/actuator/loggers/<parametr>(com.examole.taskservice
+в POST запросе прописываем json
+{"configuredLevel":"DEBUG"}
+МЕНЯЕТСЯ ПОТОМ

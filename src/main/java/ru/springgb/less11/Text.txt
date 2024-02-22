@@ -1,0 +1,97 @@
+ Запуск Prometheus
+ V1:
+ Скачиваем с оф сайта архив Prometheus
+ перемещаем в нужную нам папку
+ переходим в нее через терминал
+ запускаем команду:
+
+ prometheus.exe --config.file prometheus.yml --web.listen-address ":9090" --storage.tsdb.path "data"
+
+ Запускается сервер
+ переходим на localhost:9090  все работает
+
+ V2:
+ создаем папку, переходим в нее через терминал
+ создаем в ней файл prometheus.yml
+ Прописываем в нем конфиг
+
+ global:
+   scrape_onterval:15s
+
+ scrape_configs:
+   - job_name: 'spring_app'
+     metrics_path: '/actuator/prometheus'
+     static_configs:
+       - target: ['host.docker.internal:8080']
+
+Сохраняем его
+и запускаем докер, в терминале вводим команду
+
+docker run -d -p 9090:9090 --name=prometheus -v $(pwd)/prometheus.yml prom/prometheus
+
+Переходим на  localhost:9090  все работает
+
+
+                 Grafana
+Далее запускаем в терминале
+
+docker run -d -p 3000:3000 --name=grafana grafana/grafana
+
+переходим на localhost:3000
+
+Вводим
+    admin
+    admin
+
+Далее
+   skip - пропускаем смену пароля
+
+Подключаем Prometheus
+Если запуск в докере
+Меняем порт http://host.docker.internal:9090
+
+Далее предлагается создать наш первый дашборт
+
+
+Чтобы метрики сохранялись в Prometheus
+нужно ввести команду
+
+docker volume create prometheus-data
+docker volume create prometheus-data
+
+Запуск контейнера прометеус
+
+docker run -p 9090:9090 -v /prometheus.yml:/etc/prometheus/prometheus.yml -v prometheus-data:/prometheus prom/prometheus
+
+
+
+Настройки prometheus.yml с семинара:
+
+global:
+    scrape_interval: 15s # Default is every 1 minute.
+    evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+rule_files:
+# - "first_rules.yml"
+# - "second_rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+
+    static_configs:
+      - targets: ['127.0.0.1:9090']
+
+  - job_name: 'spring-actuator'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+
+
+еще команда
+docker run --rm --detach --name my-prometheus --publish 9090:9090 --volume prometheus-volume:/prometheus --volume ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+
+
+В докере exec
+cd /etc/prometheus/
+cat prometheus.yml
